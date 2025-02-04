@@ -7,6 +7,7 @@ use App\Filament\Resources\BrandResource\RelationManagers;
 use App\Models\Brand;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -15,6 +16,7 @@ use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
@@ -43,10 +45,10 @@ class BrandResource extends Resource
                     ->placeholder('brand-name')
                     ->required()
                     ->unique(Brand::class, 'slug', ignoreRecord:true),
-                FileUpload::make('logo')
+                    SpatieMediaLibraryFileUpload::make('logo')
                     ->image()
-                    ->directory('brands')
                     ->columnSpan('full'),
+
             ]);
     }
 
@@ -54,9 +56,9 @@ class BrandResource extends Resource
     {
         return $table
             ->columns([
+                SpatieMediaLibraryImageColumn::make('logo'),
                 TextColumn::make('name')
                 ->searchable(),
-                ImageColumn::make('logo'),
                 TextColumn::make('slug')
                     ->searchable(),
             ])
