@@ -2,11 +2,10 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\BrandResource\Pages;
-use App\Filament\Resources\BrandResource\RelationManagers;
-use App\Models\Brand;
+use App\Filament\Resources\DepartmentResource\Pages;
+use App\Filament\Resources\DepartmentResource\RelationManagers;
+use App\Models\Department;
 use Filament\Forms;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -15,40 +14,42 @@ use Filament\Tables;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
 
-class BrandResource extends Resource
+
+class DepartmentResource extends Resource
 {
-    protected static ?string $model = Brand::class;
+    protected static ?string $model = Department::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-bold';
+    protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
+    
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 TextInput::make('name')
-                    ->label('Brand Name')
-                    ->placeholder('Brand Name')
+                    ->label('Department Name')
+                    ->placeholder('Department Name')
                     ->live(onBlur: true)
                     ->afterStateUpdated(function(string $operation, $state, callable $set) {
                         $set('slug', Str::slug($state));
                     })
                     ->required(),
                 TextInput::make('slug')
-                    ->placeholder('brand-name')
+                    ->placeholder('department-name')
                     ->required()
-                    ->unique(Brand::class, 'slug', ignoreRecord:true),
-                SpatieMediaLibraryFileUpload::make('logo')
+                    ->unique(Department::class, 'slug', ignoreRecord:true),
+                SpatieMediaLibraryFileUpload::make('image')
+                    ->required()
                     ->image()
+                    ->directory('departments')
                     ->columnSpan('full'),
-
             ]);
     }
 
@@ -56,11 +57,13 @@ class BrandResource extends Resource
     {
         return $table
             ->columns([
-                SpatieMediaLibraryImageColumn::make('logo'),
+                SpatieMediaLibraryImageColumn::make('image'),
                 TextColumn::make('name')
-                ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('slug')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
             ])
             ->filters([
                 //
@@ -87,9 +90,9 @@ class BrandResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListBrands::route('/'),
-            'create' => Pages\CreateBrand::route('/create'),
-            'edit' => Pages\EditBrand::route('/{record}/edit'),
+            'index' => Pages\ListDepartments::route('/'),
+            'create' => Pages\CreateDepartment::route('/create'),
+            'edit' => Pages\EditDepartment::route('/{record}/edit'),
         ];
     }
 }
