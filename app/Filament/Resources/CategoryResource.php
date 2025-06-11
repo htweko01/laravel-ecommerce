@@ -2,25 +2,27 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\CategoryResource\Pages;
-use App\Filament\Resources\CategoryResource\RelationManagers;
-use App\Models\Category;
 use Filament\Forms;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
-use Filament\Tables\Columns\TextColumn;
+use App\Models\Category;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Filament\Resources\Resource;
+use Filament\Resources\Pages\Page;
+use Filament\Forms\Components\Select;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Actions\DeleteAction;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\CategoryResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use App\Filament\Resources\CategoryResource\RelationManagers;
+use App\Filament\Resources\CategoryResource\Pages\EditCategory;
 
 class CategoryResource extends Resource
 {
@@ -36,14 +38,14 @@ class CategoryResource extends Resource
                     ->label('Category Name')
                     ->placeholder('Category Name')
                     ->live(onBlur: true)
-                    ->afterStateUpdated(function(string $operation, $state, callable $set) {
+                    ->afterStateUpdated(function (string $operation, $state, callable $set) {
                         $set('slug', Str::slug($state));
                     })
                     ->required(),
                 TextInput::make('slug')
                     ->placeholder('category-name')
                     ->required()
-                    ->unique(Category::class, 'slug', ignoreRecord:true),
+                    ->unique(Category::class, 'slug', ignoreRecord: true),
                 Select::make('department_id')
                     ->label('Department')
                     ->placeholder('Select Department')
@@ -65,12 +67,12 @@ class CategoryResource extends Resource
                 SpatieMediaLibraryImageColumn::make('image'),
                 TextColumn::make('name')
                     ->searchable(),
-                    TextColumn::make('department.name')
+                TextColumn::make('department.name')
                     ->label('Department')
                     ->searchable(),
                 TextColumn::make('slug')
                     ->searchable(),
-                
+
             ])
             ->filters([
                 //
@@ -101,5 +103,12 @@ class CategoryResource extends Resource
             'create' => Pages\CreateCategory::route('/create'),
             'edit' => Pages\EditCategory::route('/{record}/edit'),
         ];
+    }
+
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            EditCategory::class,
+        ]);
     }
 }
